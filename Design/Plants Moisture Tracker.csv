@@ -1,0 +1,7 @@
+﻿Name,Quantity,Component
+"U1",1," Arduino Uno R3"
+"Rres1, Rres4, Rres6, Rres5, Rres2, Rres3",6,"330 Ω Resistor"
+"Dled5, Dled4",2,"Green LED"
+"Dled3, Dled2",2,"Yellow LED"
+"Dled1, Dled6",2,"Red LED"
+"SENsen1",1," Soil Moisture Sensor"
