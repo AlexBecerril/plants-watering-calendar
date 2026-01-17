@@ -1,7 +1,7 @@
 const int pinSensor = A0;
 const int leds[6] = {2,3,4,5,6,7};
-const float min_moist = 0.0;
-const float max_moist = 876.0;
+const float min_moist = 1015; //Calibrate
+const float max_moist = 385; //Calibrate
 
 void setup()
 {
@@ -11,7 +11,7 @@ void setup()
 void loop()
 {
   int moisture = analogRead(pinSensor);
-  float moisture_perc = (moisture / max_moist);
+  float moisture_perc = ((min_moist - moisture) / (min_moist - max_moist));
  
   int turn_leds_on = 0;
   if(moisture_perc >= 0.7){
