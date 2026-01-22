@@ -6,6 +6,11 @@ const float max_moist = 385; //Calibrate
 void setup()
 {
   Serial.begin(9600);
+  // Initialize leds
+  for (int i = 0; i < 6; i++) {
+    pinMode(leds[i], OUTPUT);
+    digitalWrite(leds[i], LOW);
+  }
 }
 
 void loop()
