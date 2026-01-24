@@ -1,19 +1,63 @@
-//const int pinSensor = A0; arduino legacy
+#include <BLEDevice.h>
+#include <BLEServer.h>
+#include <BLEUtils.h>
+#include <BLE2902.h>
+
 const int pinSensor = 34;
-//const int leds[6] = {2,3,4,5,6,7}; arduino legacy
 const int leds[6] = {13,12,14,27,26,25};
-const float DRY_VALUE = 1015; //Calibrate
-const float WET_VALUE = 385; //Calibrate
+
+const float DRY_VALUE = 4095; //Calibrate
+const float WET_VALUE = 0; //Calibrate
+
+BLECharacteristic *pCharacteristic;
+bool deviceConnected = false;
+
+#define SERVICE_UUID        "12345678-1234-1234-1234-1234567890ab"
+#define CHARACTERISTIC_UUID "abcd1234-1234-1234-1234-abcdef123456"
+
+class MyServerCallbacks : public BLEServerCallbacks {
+  void onConnect(BLEServer* pServer) {
+    deviceConnected = true;
+  }
+
+  void onDisconnect(BLEServer* pServer) {
+    deviceConnected = false;
+  }
+};
 
 void setup()
 {
   Serial.begin(115200);
+  delay(1000);
+
   analogReadResolution(12);
   // Initialize leds
   for (int i = 0; i < 6; i++) {
     pinMode(leds[i], OUTPUT);
     digitalWrite(leds[i], LOW);
   }
+
+  //Initialize Ble
+  BLEDevice::init("ESP32-Humedad");
+  BLEServer *pServer = BLEDevice::createServer();
+  pServer->setCallbacks(new MyServerCallbacks());
+
+  BLEService *pService = pServer->createService(SERVICE_UUID);
+
+  pCharacteristic = pService->createCharacteristic(
+    CHARACTERISTIC_UUID,
+    BLECharacteristic::PROPERTY_READ |
+    BLECharacteristic::PROPERTY_NOTIFY
+  );
+
+  pCharacteristic->addDescriptor(new BLE2902());
+
+  pService->start();
+
+  BLEAdvertising *pAdvertising = BLEDevice::getAdvertising();
+  pAdvertising->start();
+
+  Serial.println("BLE listo, esperando conexión...");
 }
 
 void loop()
@@ -37,11 +81,6 @@ void loop()
     turn_leds_on = 1;
   }
   
-  Serial.print("Raw: ");
-  Serial.print(moisture);
-  Serial.print(" | %: ");
-  Serial.println(moisture_perc*100);
-  
   //turn leds on
   for(int i=0; i<turn_leds_on; i++){
     digitalWrite(leds[i], HIGH);
@@ -49,6 +88,18 @@ void loop()
   //turn leds off
   for(int j=5; j>turn_leds_on-1; j--){
     digitalWrite(leds[j], LOW);
+  }
+
+  char buffer[50];
+  sprintf(buffer, "Raw:%d | Humedad: %.1f%%", moisture, moisture_perc * 100);
+
+  // Serial (USB)
+  Serial.println(buffer);
+
+  // BLE
+  if (deviceConnected) {
+    pCharacteristic->setValue(buffer);
+    pCharacteristic->notify();
   }
   
   delay(1000);
