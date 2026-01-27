@@ -1,1 +1,43 @@
 .ipynb_checkpoints/
+# ======================
+# Global
+# ======================
+.DS_Store
+*.log
+.env
+.env.*
+
+# ======================
+# Node / React Native (plantsApp)
+# ======================
+plantsApp/node_modules/
+plantsApp/.expo/
+plantsApp/.expo-shared/
+plantsApp/.metro-health-check*
+
+# Android
+plantsApp/android/.gradle/
+plantsApp/android/app/build/
+plantsApp/android/build/
+plantsApp/android/local.properties
+plantsApp/android/.idea/
+plantsApp/android/*.iml
+plantsApp/android/captures/
+
+# iOS
+plantsApp/ios/Pods/
+plantsApp/ios/build/
+plantsApp/ios/*.xcworkspace
+plantsApp/ios/*.xcuserdata
+plantsApp/ios/.xcode.env.local
+
+# ======================
+# Arduino
+# ======================
+plants_moisture_tracking/.pio/
+plants_moisture_tracking/build/
+
+# ======================
+# VS Code
+# ======================
+.vscode/
