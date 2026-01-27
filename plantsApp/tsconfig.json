@@ -1,0 +1,8 @@
+{
+  "extends": "@react-native/typescript-config",
+  "compilerOptions": {
+    "types": ["jest"],
+  },
+  "include": ["**/*.ts", "**/*.tsx", "App.js", "src/screens/PlantListScreen.js", "src/screens/PlantFormScreen.js", "src/screens/PlantDetailScreen.js"],
+  "exclude": ["**/node_modules", "**/Pods"]
+}
