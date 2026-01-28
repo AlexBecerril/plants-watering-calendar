@@ -1,8 +1,37 @@
-import React from 'react';
+import { useFocusEffect } from '@react-navigation/native';
+import React, { useCallback, useEffect, useState } from 'react';
 import { View, Text, FlatList, TouchableOpacity, Image, StyleSheet } from 'react-native';
-import { plants } from '../data/plants';
+import { getDB } from '../db';
 
 export default function PlantListScreen({ navigation }) {
+  
+  const [plants, setPlants] = useState([]);
+
+  //useEffect(() => {
+    const loadPlants = async () => {
+      try {
+        const db = getDB();
+        const results = await db.executeSql('SELECT * FROM plants');
+        const rows = results[0].rows;
+        const loadedPlants = [];
+        for (let i = 0; i < rows.length; i++) {
+          loadedPlants.push(rows.item(i));
+        }
+        setPlants(loadedPlants);
+      } catch (error) {
+        console.error('Error loading plants:', error);
+      }
+    };
+
+    useFocusEffect(
+      useCallback(() => {
+        loadPlants();
+      }, [])
+    );
+
+    //loadPlants();
+  //}, []);
+  
   return (
     <View style={styles.container}>
       <FlatList
@@ -24,17 +53,17 @@ export default function PlantListScreen({ navigation }) {
             <View style={styles.textContainer}>
                 <Text style={styles.name}>
                     {item.name}
-                    {item.scientificName ? (
-                    <Text style={styles.scientific}> ({item.scientificName})</Text>
+                    {item.scientific_name ? (
+                    <Text style={styles.scientific}> ({item.scientific_name})</Text>
                     ) : null}
                 </Text>
 
                 <Text style={styles.meta}>
-                    Último riego: {item.lastWateringDate || 'Sin registro'}
+                    Último riego: {item.last_watering_date || 'Sin registro'}
                 </Text>
 
                 <Text style={styles.meta}>
-                    Humedad ideal: {item.humidityMin}% – {item.humidityMax}%
+                    Humedad ideal: {item.humidity_min}% – {item.humidity_max}%
                 </Text>
             </View>
 

@@ -1,10 +1,31 @@
 import React, { useState } from 'react';
-import { View, Text, StyleSheet, TouchableOpacity, Platform } from 'react-native';
+import { View, Text, StyleSheet, TouchableOpacity, Platform, Alert } from 'react-native';
 import DateTimePicker from '@react-native-community/datetimepicker';
+import { getDB } from '../db';
 
-export default function RegisterWateringScreen() {
+export default function RegisterWateringScreen({ route, navigation }) {
+  const { plant } = route.params; 
   const [date, setDate] = useState(new Date());
   const [showPicker, setShowPicker] = useState(false);
+
+  const saveWatering = async () => {
+    try {
+      const db = getDB();
+      await db.executeSql(
+        `INSERT INTO watering_logs (plant_id, date) VALUES (?, ?)`,
+        [plant.id, date.toISOString().split('T')[0]]
+      );
+      await db.executeSql(
+        `UPDATE plants SET last_watering_date = ? WHERE id = ?`,
+        [date.toISOString().split('T')[0], plant.id]
+      );
+      Alert.alert('Éxito', 'Riego registrado correctamente');
+      navigation.goBack();
+    } catch (e) {
+      console.error('Error guardando riego:', e);
+      Alert.alert('Error', 'No se pudo registrar el riego');
+    }
+  };
 
   return (
     <View style={styles.container}>
@@ -31,7 +52,7 @@ export default function RegisterWateringScreen() {
         />
       )}
 
-      <TouchableOpacity style={styles.saveButton}>
+      <TouchableOpacity style={styles.saveButton} onPress={saveWatering}>
         <Text style={styles.saveText}>Guardar riego</Text>
       </TouchableOpacity>
     </View>

@@ -1,13 +1,16 @@
 import React, { useEffect, useState } from 'react';
-import { View, Text, StyleSheet, TouchableOpacity } from 'react-native';
+import { View, Text, StyleSheet, TouchableOpacity, Alert, Platform } from 'react-native';
+import DateTimePicker from '@react-native-community/datetimepicker';
+import { getDB } from '../db';
 
-export default function RegisterHumidityScreen({ route }) {
+export default function RegisterHumidityScreen({ route, navigation }) {
   const [indicatorColor, setIndicatorColor] = useState('green');
-  
   const { plant } = route.params;
 
   const [humidity, setHumidity] = useState(50);
   const [status, setStatus] = useState('');
+  const [date, setDate] = useState(new Date());
+  const [showPicker, setShowPicker] = useState(false);
 
   // Simulación de lectura de humedad
   useEffect(() => {
@@ -23,21 +26,40 @@ export default function RegisterHumidityScreen({ route }) {
   useEffect(() => {
     const margin = 10;
 
-    if (humidity >= plant.humidityMin && humidity <= plant.humidityMax) {
-        setStatus('Humedad ideal · Todo está bien');
-        setIndicatorColor('#2e7d32'); // verde
+    if (humidity >= plant.humidity_min && humidity <= plant.humidity_max) {
+      setStatus('Humedad ideal · Todo está bien');
+      setIndicatorColor('#2e7d32'); // verde
     } else if (
-        humidity >= plant.humidityMin - margin &&
-        humidity <= plant.humidityMax + margin
+      humidity >= plant.humidity_min - margin &&
+      humidity <= plant.humidity_max + margin
     ) {
-        setStatus('Humedad fuera del rango · Atención');
-        setIndicatorColor('#f9a825'); // amarillo
+      setStatus('Humedad fuera del rango · Atención');
+      setIndicatorColor('#f9a825'); // amarillo
     } else {
-        setStatus('Humedad crítica · Riesgo para la planta');
-        setIndicatorColor('#c62828'); // rojo
+      setStatus('Humedad crítica · Riesgo para la planta');
+      setIndicatorColor('#c62828'); // rojo
     }
-    }, [humidity]);
+  }, [humidity]);
 
+  const saveHumidity = async () => {
+    try {
+      const db = getDB();
+      const isoDate = date.toISOString().split('T')[0];
+
+      await db.transaction(async (tx) => {
+        await tx.executeSql(
+          `INSERT INTO moisture_logs (plant_id, date, value) VALUES (?, ?, ?)`,
+          [plant.id, isoDate, humidity]
+        );
+      });
+
+      Alert.alert('Éxito', 'Lectura de humedad guardada correctamente');
+      navigation.goBack();
+    } catch (e) {
+      console.error('Error guardando humedad:', e);
+      Alert.alert('Error', 'No se pudo guardar la lectura');
+    }
+  };
 
   return (
     <View style={styles.container}>
@@ -47,16 +69,36 @@ export default function RegisterHumidityScreen({ route }) {
 
       <View style={styles.statusRow}>
         <View
-            style={[
+          style={[
             styles.indicator,
             { backgroundColor: indicatorColor }
-            ]}
+          ]}
         />
         <Text style={styles.status}>{status}</Text>
-        </View>
+      </View>
 
+      {/* Selector de fecha */}
+      <Text style={[styles.label, { marginTop: 24 }]}>Fecha de lectura</Text>
+      <TouchableOpacity
+        style={styles.dateButton}
+        onPress={() => setShowPicker(true)}
+      >
+        <Text>{date.toISOString().split('T')[0]}</Text>
+      </TouchableOpacity>
+      {showPicker && (
+        <DateTimePicker
+          value={date}
+          mode="date"
+          display={Platform.OS === 'ios' ? 'spinner' : 'default'}
+          maximumDate={new Date()}
+          onChange={(event, selectedDate) => {
+            setShowPicker(false);
+            if (selectedDate) setDate(selectedDate);
+          }}
+        />
+      )}
 
-      <TouchableOpacity style={styles.button}>
+      <TouchableOpacity style={styles.button} onPress={saveHumidity}>
         <Text style={styles.buttonText}>Guardar lectura</Text>
       </TouchableOpacity>
     </View>
@@ -85,6 +127,17 @@ const styles = StyleSheet.create({
     fontSize: 16,
     textAlign: 'center'
   },
+  statusRow: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    marginTop: 12
+  },
+  indicator: {
+    width: 12,
+    height: 12,
+    borderRadius: 6,
+    marginRight: 8
+  },
   button: {
     marginTop: 32,
     paddingVertical: 16,
@@ -96,16 +149,16 @@ const styles = StyleSheet.create({
     color: '#fff',
     fontWeight: '600'
   },
-  statusRow: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    marginTop: 12
+  label: {
+    fontWeight: '600',
+    marginBottom: 8
   },
-  indicator: {
-    width: 12,
-    height: 12,
-    borderRadius: 6,
-    marginRight: 8
+  dateButton: {
+    padding: 12,
+    borderWidth: 1,
+    borderColor: '#ccc',
+    borderRadius: 8,
+    minWidth: 140,
+    alignItems: 'center'
   }
-
 });

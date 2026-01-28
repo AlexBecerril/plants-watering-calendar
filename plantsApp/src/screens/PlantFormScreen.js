@@ -1,14 +1,15 @@
 import React, { useState } from 'react';
 import {
-  View,
   Text,
   TextInput,
   StyleSheet,
   TouchableOpacity,
-  ScrollView
+  ScrollView,
+  Alert
 } from 'react-native';
+import { getDB } from '../db';
 
-export default function PlantFormScreen() {
+export default function PlantFormScreen({ navigation }) {
   const [name, setName] = useState('');
   const [scientificName, setScientificName] = useState('');
 
@@ -17,6 +18,62 @@ export default function PlantFormScreen() {
   const [dryRisk, setDryRisk] = useState('');
   const [overwaterRisk, setOverwaterRisk] = useState('');
   const [comments, setComments] = useState('');
+
+  const savePlant = async () => {
+    if (!name.trim()) {
+      Alert.alert('Error', 'El nombre de la planta es obligatorio');
+      return;
+    }
+
+    const plant = {
+      name,
+      scientific_name: scientificName,
+      humidity_min: parseInt(minHumidity) || 0,
+      humidity_max: parseInt(maxHumidity) || 0,
+      drought_risk: parseInt(dryRisk) || 0,
+      flood_risk: parseInt(overwaterRisk) || 0,
+      last_watering_date: null,
+      image: null
+    };
+
+    try {
+      const db = getDB();
+      await db.executeSql(
+        `INSERT INTO plants 
+        (name, scientific_name, humidity_min, humidity_max, drought_risk, flood_risk, last_watering_date, image) 
+        VALUES (?, ?, ?, ?, ?, ?, ?, ?)`,
+        [
+          plant.name,
+          plant.scientific_name,
+          plant.humidity_min,
+          plant.humidity_max,
+          plant.drought_risk,
+          plant.flood_risk,
+          plant.last_watering_date,
+          plant.image
+        ]
+      );
+
+      Alert.alert('Éxito', 'Planta guardada correctamente');
+      
+      // Limpiar formulario
+      setName('');
+      setScientificName('');
+      setMinHumidity('');
+      setMaxHumidity('');
+      setDryRisk('');
+      setOverwaterRisk('');
+      setComments('');
+
+      // Opcional: navegar a la lista
+      navigation.goBack();
+
+    } catch (error) {
+      console.error('Error saving plant:', error);
+      Alert.alert('Error', 'No se pudo guardar la planta');
+    }
+  };
+
 
   return (
     <ScrollView contentContainerStyle={styles.container}
@@ -88,7 +145,7 @@ export default function PlantFormScreen() {
       />
 
       {/* GUARDAR */}
-      <TouchableOpacity style={styles.saveButton}>
+      <TouchableOpacity style={styles.saveButton} onPress={savePlant}>
         <Text style={styles.saveText}>Guardar planta</Text>
       </TouchableOpacity>
     </ScrollView>

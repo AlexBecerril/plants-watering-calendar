@@ -1,16 +1,101 @@
-import React from 'react';
-import { View, Text, StyleSheet, Image, ScrollView, TouchableOpacity } from 'react-native';
+import React, { useEffect, useState } from 'react';
+import { View, Text, StyleSheet, Image, ScrollView, TouchableOpacity, Dimensions, Alert } from 'react-native';
+import { LineChart } from 'react-native-chart-kit';
+import { getDB } from '../db';
 
 export default function PlantDetailScreen({ route, navigation }) {
   const { plant } = route.params;
+  const [wateringLog, setWateringLog] = useState([]);
+  const [humidityLog, setHumidityLog] = useState([]);
+  const screenWidth = Dimensions.get('window').width - 32;
+
+  useEffect(() => {
+    const fetchLogs = async () => {
+      try {
+        const db = getDB();
+        const today = new Date();
+        const past30 = new Date();
+        past30.setDate(today.getDate() - 29);
+        const startDate = past30.toISOString().split('T')[0];
+
+        // Generamos arreglo de fechas
+        const dateArray = [];
+        for (let d = new Date(past30); d <= today; d.setDate(d.getDate() + 1)) {
+          dateArray.push(d.toISOString().split('T')[0]);
+        }
+
+        // Función para mapear logs
+        const mapLogs = async (table, hasValue) => {
+          const [results] = await db.executeSql(
+            `SELECT date, ${hasValue ? 'value' : '1'} as value, MAX(id) as id
+             FROM ${table}
+             WHERE plant_id = ? AND date >= ?
+             GROUP BY date
+             ORDER BY date ASC`,
+            [plant.id, startDate]
+          );
+
+          const logsByDate = {};
+          for (let i = 0; i < results.rows.length; i++) {
+            const row = results.rows.item(i);
+            logsByDate[row.date] = hasValue ? parseInt(row.value, 10) : 1;
+          }
+
+          // Devolvemos todos los días (null si no hay registro)
+          return dateArray.map(date => ({
+            date,
+            value: logsByDate[date] ?? null
+          }));
+        };
+
+        const wateringData = await mapLogs('watering_logs', false);
+        const humidityData = await mapLogs('moisture_logs', true);
+
+        setWateringLog(wateringData);
+        setHumidityLog(humidityData);
+      } catch (e) {
+        console.error(e);
+      }
+    };
+    fetchLogs();
+  }, [plant.id]);
+
+  const prepareChartData = (data) => {
+    //Alert.alert(data.toString());
+    if (!data || data.length === 0) {
+      const length = 30;
+
+      return {
+        labels: Array.from({ length }, (_, index) =>
+          (index + 1) % 3 === 0 ? (index + 1).toString() : ''
+        ),
+        datasets: [
+          {
+            data: Array(length).fill(0)
+          }
+        ]
+      };
+    }
+
+
+    return {
+      labels: data.map((_, index) => (index + 1) % 3 === 0 ? (index + 1).toString() : ''),
+      datasets: [{
+        data: data.map(item => {
+          const v = Number(item.value);
+          return Number.isFinite(v) ? v : 0;
+        }),
+        strokeWidth: 2,
+      }]
+    };
+  };
+
 
   return (
     <ScrollView contentContainerStyle={styles.container}>
-      {/* Nombre */}
       <Text style={styles.name}>{plant.name}</Text>
-      <Text style={styles.scientific}>{plant.scientificName}</Text>
+      <Text style={styles.scientific}>{plant.scientific_name}</Text>
 
-      {/* Imagen */}
       <View style={styles.imageWrapper}>
         {plant.image ? (
           <Image source={{ uri: plant.image }} style={styles.image} />
@@ -19,144 +104,106 @@ export default function PlantDetailScreen({ route, navigation }) {
         )}
       </View>
 
-      {/* Humedad ideal */}
       <View style={styles.card}>
         <Text style={styles.cardTitle}>Humedad ideal</Text>
-        <Text>{plant.humidityMin}% – {plant.humidityMax}%</Text>
+        <Text>{plant.humidity_min}% – {plant.humidity_max}%</Text>
       </View>
 
-      {/* Riesgos */}
       <View style={styles.card}>
         <Text style={styles.cardTitle}>Riesgos</Text>
-        <Text>Sequía: {plant.droughtRisk}%</Text>
-        <Text>Ahogamiento: {plant.floodRisk}%</Text>
+        <Text>Sequía: {plant.drought_risk}%</Text>
+        <Text>Ahogamiento: {plant.flood_risk}%</Text>
       </View>
 
-      {/* Comentarios */}
       <View style={styles.card}>
         <Text style={styles.cardTitle}>Comentarios</Text>
         <Text>{plant.comments || 'Sin comentarios'}</Text>
       </View>
 
-      {/* Último riego */}
       <View style={styles.card}>
         <Text style={styles.cardTitle}>Último riego</Text>
-        <Text>{plant.lastWateringDate || 'Sin registro'}</Text>
+        <Text>{plant.last_watering_date || 'Sin registro'}</Text>
       </View>
 
-      {/* Gráfica de humedad (placeholder) */}
+      {/* Gráfica de riegos */}
       <View style={styles.card}>
-        <Text style={styles.cardTitle}>Historial de humedad</Text>
-
-        <View style={styles.chart}>
-          {plant.humidityLog.map((item, index) => (
-            <View key={index} style={styles.chartItem}>
-              <View
-                style={[
-                  styles.bar,
-                  { height: item.value }
-                ]}
-              />
-              <Text style={styles.chartLabel}>{item.date.slice(8)}</Text>
-            </View>
-          ))}
-        </View>
-
-        <Text style={styles.chartNote}>
-          * Altura de la barra = % de humedad
-        </Text>
+        <Text style={styles.cardTitle}>Historial de Riegos (últimos 30 días)</Text>
+        <LineChart
+          data={prepareChartData(wateringLog)}
+          width={screenWidth}
+          height={200}
+          chartConfig={{
+            backgroundColor: '#f1f1f1',
+            backgroundGradientFrom: '#f1f1f1',
+            backgroundGradientTo: '#f1f1f1',
+            decimalPlaces: 0,
+            color: (opacity = 1) => `rgba(46,125,50,${opacity})`,
+            labelColor: (opacity = 1) => `rgba(0,0,0,${opacity})`,
+            propsForDots: {
+              r: '4',
+              strokeWidth: '2',
+              stroke: '#2e7d32'
+            }
+          }}
+          style={{ marginVertical: 8, borderRadius: 8 }}
+        />
       </View>
-      <TouchableOpacity style={styles.button} onPress={() => navigation.navigate('RegisterWatering')}>
-        <Text style={styles.buttonText}>Registrar riego</Text>
-      </TouchableOpacity>
+
+      {/* Gráfica de humedad */}
+      <View style={styles.card}>
+        <Text style={styles.cardTitle}>Historial de Humedad (últimos 30 días)</Text>
+        <LineChart
+          data={prepareChartData(humidityLog)}
+          width={screenWidth}
+          height={200}
+          chartConfig={{
+            backgroundColor: '#f1f1f1',
+            backgroundGradientFrom: '#f1f1f1',
+            backgroundGradientTo: '#f1f1f1',
+            decimalPlaces: 0,
+            color: (opacity = 1) => `rgba(76,175,80,${opacity})`,
+            labelColor: (opacity = 1) => `rgba(0,0,0,${opacity})`,
+            propsForDots: {
+              r: '4',
+              strokeWidth: '2',
+              stroke: '#4caf50'
+            }
+          }}
+          bezier
+          style={{ marginVertical: 8, borderRadius: 8 }}
+        />
+      </View>
+
       <TouchableOpacity
         style={styles.button}
-        onPress={() =>
-            navigation.navigate('RegisterHumidity', { plant })
-        }
-        >
+        onPress={() => navigation.navigate('RegisterWatering', { plant })}
+      >
+        <Text style={styles.buttonText}>Registrar riego</Text>
+      </TouchableOpacity>
+
+      <TouchableOpacity
+        style={styles.button}
+        onPress={() => navigation.navigate('RegisterHumidity', { plant })}
+      >
         <Text style={styles.buttonText}>Registrar humedad</Text>
-        </TouchableOpacity>
+      </TouchableOpacity>
     </ScrollView>
   );
 }
 
 const styles = StyleSheet.create({
-  container: {
-    padding: 16
-  },
-  name: {
-    fontSize: 24,
-    fontWeight: '700'
-  },
-  scientific: {
-    fontSize: 14,
-    color: '#555',
-    marginBottom: 12
-  },
-  imageWrapper: {
-    alignItems: 'center',
-    marginVertical: 12
-  },
-  image: {
-    width: 200,
-    height: 200,
-    borderRadius: 12
-  },
-  imagePlaceholder: {
-    fontSize: 64
-  },
+  container: { padding: 16},
+  name: { fontSize: 24, fontWeight: '700' },
+  scientific: { fontSize: 16, color: '#555', marginBottom: 12 },
+  imageWrapper: { alignItems: 'center', marginVertical: 12 },
+  image: { width: 200, height: 200, borderRadius: 12 },
+  imagePlaceholder: { fontSize: 64 },
   card: {
-    marginTop: 16,
-    padding: 12,
-    backgroundColor: '#f1f1f1',
-    borderRadius: 8
-  },
-  cardTitle: {
-    fontWeight: '600',
-    marginBottom: 6
-  },
-  chart: {
-    flexDirection: 'row',
-    alignItems: 'flex-end',
-    marginTop: 12,
-    height: 100
-  },
-  chartItem: {
-    alignItems: 'center',
-    marginRight: 8
-  },
-  bar: {
-    width: 20,
-    backgroundColor: '#4caf50',
-    borderRadius: 4
-  },
-  chartLabel: {
-    fontSize: 10,
-    marginTop: 4
-  },
-  chartNote: {
-    fontSize: 10,
-    color: '#777',
-    marginTop: 6
-  },
-  button: {
-    marginTop: 16,
-    padding: 14,
-    backgroundColor: '#388e3c',
-    borderRadius: 8,
-    alignItems: 'center'
-  },
-  buttonSecondary: {
-    marginTop: 12,
-    padding: 14,
-    backgroundColor: '#1976d2',
-    borderRadius: 8,
-    alignItems: 'center'
-  },
-  buttonText: {
-    color: '#fff',
-    fontWeight: '600'
-  }
-
+    marginTop: 16, 
+    padding: 12, 
+    backgroundColor: '#f1f1f1', 
+    borderRadius: 8},
+  cardTitle: { fontWeight: '600', marginBottom: 6, fontSize:16 },
+  button: { marginTop: 16, padding: 14, backgroundColor: '#388e3c', borderRadius: 8, alignItems: 'center' },
+  buttonText: { color: '#fff', fontWeight: '600' }
 });
