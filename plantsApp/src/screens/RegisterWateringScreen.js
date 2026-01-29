@@ -37,7 +37,7 @@ export default function RegisterWateringScreen({ route, navigation }) {
         style={styles.dateButton}
         onPress={() => setShowPicker(true)}
       >
-        <Text>{date.toISOString().split('T')[0]}</Text>
+        <Text style={styles.dateText}>{date.toISOString().split('T')[0]}</Text>
       </TouchableOpacity>
 
       {showPicker && (
@@ -62,19 +62,22 @@ export default function RegisterWateringScreen({ route, navigation }) {
 const styles = StyleSheet.create({
   container: { flex: 1, padding: 16 },
   title: { fontSize: 22, fontWeight: '700', marginBottom: 24 },
-  label: { fontWeight: '600', marginBottom: 8 },
+  label: { fontWeight: '600', marginBottom: 8, fontSize:16 },
   dateButton: {
     padding: 14,
     borderWidth: 1,
     borderColor: '#ccc',
     borderRadius: 8
   },
+  dateText:{
+    fontSize:16
+  },
   saveButton: {
     marginTop: 32,
     padding: 16,
-    backgroundColor: '#388e3c',
+    backgroundColor: '#1E88E5',
     borderRadius: 8,
     alignItems: 'center'
   },
-  saveText: { color: '#fff', fontWeight: '600' }
+  saveText: { color: '#fff', fontWeight: '600', fontSize: 16 }
 });

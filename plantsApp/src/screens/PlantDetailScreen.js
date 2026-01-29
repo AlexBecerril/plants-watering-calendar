@@ -106,23 +106,23 @@ export default function PlantDetailScreen({ route, navigation }) {
 
       <View style={styles.card}>
         <Text style={styles.cardTitle}>Humedad ideal</Text>
-        <Text>{plant.humidity_min}% – {plant.humidity_max}%</Text>
+        <Text style={styles.cardText}>{plant.humidity_min}% – {plant.humidity_max}%</Text>
       </View>
 
       <View style={styles.card}>
         <Text style={styles.cardTitle}>Riesgos</Text>
-        <Text>Sequía: {plant.drought_risk}%</Text>
-        <Text>Ahogamiento: {plant.flood_risk}%</Text>
+        <Text style={styles.cardText}>Sequía: {plant.drought_risk}%</Text>
+        <Text style={styles.cardText}>Ahogamiento: {plant.flood_risk}%</Text>
       </View>
 
       <View style={styles.card}>
         <Text style={styles.cardTitle}>Comentarios</Text>
-        <Text>{plant.comments || 'Sin comentarios'}</Text>
+        <Text style={styles.cardText}>{plant.comments || 'Sin comentarios'}</Text>
       </View>
 
       <View style={styles.card}>
         <Text style={styles.cardTitle}>Último riego</Text>
-        <Text>{plant.last_watering_date || 'Sin registro'}</Text>
+        <Text style={styles.cardText}>{plant.last_watering_date || 'Sin registro'}</Text>
       </View>
 
       {/* Gráfica de riegos */}
@@ -137,12 +137,12 @@ export default function PlantDetailScreen({ route, navigation }) {
             backgroundGradientFrom: '#f1f1f1',
             backgroundGradientTo: '#f1f1f1',
             decimalPlaces: 0,
-            color: (opacity = 1) => `rgba(46,125,50,${opacity})`,
+            color: (opacity = 1) => `rgba(30,136,229,${opacity})`,
             labelColor: (opacity = 1) => `rgba(0,0,0,${opacity})`,
             propsForDots: {
               r: '4',
               strokeWidth: '2',
-              stroke: '#2e7d32'
+              stroke: '#1E88E5'
             }
           }}
           style={{ marginVertical: 8, borderRadius: 8 }}
@@ -161,12 +161,12 @@ export default function PlantDetailScreen({ route, navigation }) {
             backgroundGradientFrom: '#f1f1f1',
             backgroundGradientTo: '#f1f1f1',
             decimalPlaces: 0,
-            color: (opacity = 1) => `rgba(76,175,80,${opacity})`,
+            color: (opacity = 1) => `rgba(126,87,194,${opacity})`,
             labelColor: (opacity = 1) => `rgba(0,0,0,${opacity})`,
             propsForDots: {
               r: '4',
               strokeWidth: '2',
-              stroke: '#4caf50'
+              stroke: '#7E57C2'
             }
           }}
           bezier
@@ -175,14 +175,14 @@ export default function PlantDetailScreen({ route, navigation }) {
       </View>
 
       <TouchableOpacity
-        style={styles.button}
+        style={styles.wateringButton}
         onPress={() => navigation.navigate('RegisterWatering', { plant })}
       >
         <Text style={styles.buttonText}>Registrar riego</Text>
       </TouchableOpacity>
 
       <TouchableOpacity
-        style={styles.button}
+        style={styles.humidityButton}
         onPress={() => navigation.navigate('RegisterHumidity', { plant })}
       >
         <Text style={styles.buttonText}>Registrar humedad</Text>
@@ -193,17 +193,19 @@ export default function PlantDetailScreen({ route, navigation }) {
 
 const styles = StyleSheet.create({
   container: { padding: 16},
-  name: { fontSize: 24, fontWeight: '700' },
-  scientific: { fontSize: 16, color: '#555', marginBottom: 12 },
-  imageWrapper: { alignItems: 'center', marginVertical: 12 },
+  name: { fontSize: 22, fontWeight: '700' },
+  scientific: { fontSize: 18, color: '#555', marginBottom: 12 },
+  imageWrapper: { alignItems: 'center', marginVertical: 12, backgroundColor:'#ccc', padding:10, borderRadius:20, minHeight: 120 },
   image: { width: 200, height: 200, borderRadius: 12 },
   imagePlaceholder: { fontSize: 64 },
   card: {
-    marginTop: 16, 
+    marginTop: 5, 
     padding: 12, 
     backgroundColor: '#f1f1f1', 
     borderRadius: 8},
   cardTitle: { fontWeight: '600', marginBottom: 6, fontSize:16 },
-  button: { marginTop: 16, padding: 14, backgroundColor: '#388e3c', borderRadius: 8, alignItems: 'center' },
-  buttonText: { color: '#fff', fontWeight: '600' }
+  cardText: { fontSize:16 },
+  wateringButton: { marginBottom: 16, padding: 14, backgroundColor: '#1E88E5', borderRadius: 8, alignItems: 'center' },
+  humidityButton: { marginBottom: 16, padding: 14, backgroundColor: '#7E57C2', borderRadius: 8, alignItems: 'center' },
+  buttonText: { color: '#fff', fontWeight: '600', fontSize:16 }
 });

@@ -83,7 +83,7 @@ export default function RegisterHumidityScreen({ route, navigation }) {
         style={styles.dateButton}
         onPress={() => setShowPicker(true)}
       >
-        <Text>{date.toISOString().split('T')[0]}</Text>
+        <Text style={styles.dateText}>{date.toISOString().split('T')[0]}</Text>
       </TouchableOpacity>
       {showPicker && (
         <DateTimePicker
@@ -113,14 +113,14 @@ const styles = StyleSheet.create({
     alignItems: 'center'
   },
   title: {
-    fontSize: 18,
+    fontSize: 22,
     marginBottom: 12,
     fontWeight: '600'
   },
   humidityValue: {
-    fontSize: 72,
+    fontSize: 55,
     fontWeight: '800',
-    color: '#2e7d32'
+    color: '#1E88E5'
   },
   status: {
     marginTop: 12,
@@ -133,25 +133,28 @@ const styles = StyleSheet.create({
     marginTop: 12
   },
   indicator: {
-    width: 12,
-    height: 12,
-    borderRadius: 6,
-    marginRight: 8
+    width: 18,
+    height: 18,
+    borderRadius: 10,
+    marginRight: 8,
+    marginTop: 12
   },
   button: {
     marginTop: 32,
     paddingVertical: 16,
     paddingHorizontal: 32,
-    backgroundColor: '#388e3c',
+    backgroundColor: '#7E57C2',
     borderRadius: 10
   },
   buttonText: {
     color: '#fff',
-    fontWeight: '600'
+    fontWeight: '600',
+    fontSize: 16
   },
   label: {
     fontWeight: '600',
-    marginBottom: 8
+    marginBottom: 8,
+    fontSize: 16
   },
   dateButton: {
     padding: 12,
@@ -159,6 +162,9 @@ const styles = StyleSheet.create({
     borderColor: '#ccc',
     borderRadius: 8,
     minWidth: 140,
-    alignItems: 'center'
+    alignItems: 'center',
+  },
+  dateText: {
+    fontSize: 16
   }
 });

@@ -171,20 +171,23 @@ const styles = StyleSheet.create({
   },
 
   photoText: {
-    color: '#666'
+    color: '#666',
+    fontSize: 16
   },
 
   label: {
     marginTop: 12,
-    fontWeight: '600'
+    fontWeight: '600',
+    fontSize: 16
   },
 
   input: {
     borderWidth: 1,
     borderColor: '#ccc',
     borderRadius: 6,
-    padding: 8,
-    marginTop: 4
+    padding: 10,
+    marginTop: 4,
+    fontSize: 16
   },
 
   textArea: {
@@ -197,11 +200,13 @@ const styles = StyleSheet.create({
     padding: 16,
     backgroundColor: '#2e7d32',
     borderRadius: 8,
-    alignItems: 'center'
+    alignItems: 'center',
+    marginBottom: 10
   },
 
   saveText: {
     color: '#fff',
-    fontWeight: '600'
+    fontWeight: '600',
+    fontSize: 16
   }
 });

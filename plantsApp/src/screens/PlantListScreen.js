@@ -92,8 +92,8 @@ const styles = StyleSheet.create({
     backgroundColor: '#eee'
   },
   imagePlaceholder: {
-    width: 50,
-    height: 50,
+    width: 70,
+    height: 70,
     marginRight: 12,
     alignItems: 'center',
     justifyContent: 'center',
@@ -101,13 +101,13 @@ const styles = StyleSheet.create({
     borderRadius: 6
   },
   image: { width: 50, height: 50, borderRadius: 6 },
-  name: { fontSize: 16, fontWeight: '600' },
-  scientific: { fontSize: 12, color: '#555' },
+  name: { fontSize: 18, fontWeight: '600' },
+  scientific: { fontSize: 16, color: '#555' },
   textContainer: {
     flex: 1
   },
   meta: {
-    fontSize: 12,
+    fontSize: 16,
     color: '#666',
     marginTop: 2
   },
@@ -115,7 +115,8 @@ const styles = StyleSheet.create({
     padding: 16,
     backgroundColor: '#2e7d32',
     borderRadius: 8,
-    alignItems: 'center'
+    alignItems: 'center',
+    marginBottom: 20
   },
-  addButtonText: { color: '#fff', fontWeight: '600' }
+  addButtonText: { color: '#fff', fontWeight: '600', fontSize: 16 }
 });
