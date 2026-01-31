@@ -24,7 +24,11 @@ export default function App() {
         const db = getDB();
         //await db.executeSql('DELETE FROM plants');
         //await db.executeSql('DROP TABLE IF EXISTS plants');
-        //await db.executeSql('DROP TABLE IF EXISTS moisture_logs');
+        //await db.executeSql('DROP TABLE IF EXISTS watering_logs');
+        //await db.executeSql('ALTER TABLE moisture_logs RENAME TO moisture_logs_old');
+        //await db.executeSql('CREATE TABLE moisture_logs (id INTEGER PRIMARY KEY AUTOINCREMENT,plant_id INTEGER NOT NULL,date TEXT NOT NULL,value INTEGER NOT NULL,FOREIGN KEY (plant_id) REFERENCES plants(id));');
+        //await db.executeSql('INSERT INTO moisture_logs (plant_id, date, value)SELECT CAST(plant_id AS INTEGER),date,value FROM moisture_logs_old;');
+        //await db.executeSql('ALTER TABLE plants ADD COLUMN comments TEXT DEFAULT "";');
         //-------------------
         setDbReady(true);
         console.log('Database ready');

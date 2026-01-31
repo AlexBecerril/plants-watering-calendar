@@ -5,19 +5,23 @@ import {
   StyleSheet,
   TouchableOpacity,
   ScrollView,
-  Alert
+  Alert,
+  Image
 } from 'react-native';
 import { getDB } from '../db';
+import { launchCamera, launchImageLibrary } from 'react-native-image-picker';
 
-export default function PlantFormScreen({ navigation }) {
-  const [name, setName] = useState('');
-  const [scientificName, setScientificName] = useState('');
+export default function PlantFormScreen({ route, navigation }) {
+  const editingPlant = route.params?.plant;
 
-  const [minHumidity, setMinHumidity] = useState('');
-  const [maxHumidity, setMaxHumidity] = useState('');
-  const [dryRisk, setDryRisk] = useState('');
-  const [overwaterRisk, setOverwaterRisk] = useState('');
-  const [comments, setComments] = useState('');
+  const [name, setName] = useState(editingPlant?.name || '');
+  const [scientificName, setScientificName] = useState(editingPlant?.scientific_name || '');
+  const [minHumidity, setMinHumidity] = useState(editingPlant?.humidity_min?.toString() || '');
+  const [maxHumidity, setMaxHumidity] = useState(editingPlant?.humidity_max?.toString() || '');
+  const [dryRisk, setDryRisk] = useState(editingPlant?.drought_risk?.toString() || '');
+  const [overwaterRisk, setOverwaterRisk] = useState(editingPlant?.flood_risk?.toString() || '');
+  const [comments, setComments] = useState(editingPlant?.comments || '');
+  const [image, setImage] = useState(editingPlant?.image || null);
 
   const savePlant = async () => {
     if (!name.trim()) {
@@ -32,30 +36,52 @@ export default function PlantFormScreen({ navigation }) {
       humidity_max: parseInt(maxHumidity) || 0,
       drought_risk: parseInt(dryRisk) || 0,
       flood_risk: parseInt(overwaterRisk) || 0,
+      comments: comments || '',
       last_watering_date: null,
-      image: null
+      image: image || null
     };
 
     try {
       const db = getDB();
-      await db.executeSql(
-        `INSERT INTO plants 
-        (name, scientific_name, humidity_min, humidity_max, drought_risk, flood_risk, last_watering_date, image) 
-        VALUES (?, ?, ?, ?, ?, ?, ?, ?)`,
-        [
-          plant.name,
-          plant.scientific_name,
-          plant.humidity_min,
-          plant.humidity_max,
-          plant.drought_risk,
-          plant.flood_risk,
-          plant.last_watering_date,
-          plant.image
-        ]
-      );
 
-      Alert.alert('Éxito', 'Planta guardada correctamente');
-      
+      if (editingPlant) {
+        await db.executeSql(
+          `UPDATE plants 
+           SET name=?, scientific_name=?, humidity_min=?, humidity_max=?, drought_risk=?, flood_risk=?, comments=?, image=? 
+           WHERE id=?`,
+          [
+            plant.name,
+            plant.scientific_name,
+            plant.humidity_min,
+            plant.humidity_max,
+            plant.drought_risk,
+            plant.flood_risk,
+            plant.comments,
+            plant.image,
+            editingPlant.id
+          ]
+        );
+        Alert.alert('Éxito', 'Planta actualizada correctamente');
+      }else{
+        await db.executeSql(
+          `INSERT INTO plants 
+          (name, scientific_name, humidity_min, humidity_max, drought_risk, flood_risk, comments, last_watering_date, image) 
+          VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)`,
+          [
+            plant.name,
+            plant.scientific_name,
+            plant.humidity_min,
+            plant.humidity_max,
+            plant.drought_risk,
+            plant.flood_risk,
+            plant.comments,
+            plant.last_watering_date,
+            plant.image
+          ]
+        );
+        Alert.alert('Éxito', 'Planta guardada correctamente');
+      }
+
       // Limpiar formulario
       setName('');
       setScientificName('');
@@ -74,14 +100,57 @@ export default function PlantFormScreen({ navigation }) {
     }
   };
 
+  const chooseImage = () => {
+    Alert.alert(
+      'Seleccionar imagen',
+      'Elige una opción',
+      [
+        {
+          text: 'Cámara',
+          onPress: () => {
+            launchCamera(
+              { mediaType: 'photo', quality: 0.7 },
+              response => {
+                if (!response.didCancel && !response.errorCode) {
+                  setImage(response.assets[0].uri);
+                }
+              }
+            );
+          },
+        },
+        {
+          text: 'Galería',
+          onPress: () => {
+            launchImageLibrary(
+              { mediaType: 'photo', quality: 0.7 },
+              response => {
+                if (!response.didCancel && !response.errorCode) {
+                  setImage(response.assets[0].uri);
+                }
+              }
+            );
+          },
+        },
+        { text: 'Cancelar', style: 'cancel' },
+      ]
+    );
+  };
+
+
 
   return (
     <ScrollView contentContainerStyle={styles.container}
     keyboardShouldPersistTaps="handled">
 
+      <Text style={styles.title}>{editingPlant ? 'Editar Planta' : 'Nueva Planta'}</Text>
+
       {/* FOTO */}
-      <TouchableOpacity style={styles.photoContainer}>
-        <Text style={styles.photoText}>Agregar foto</Text>
+      <TouchableOpacity style={styles.photoContainer} onPress={chooseImage}>
+        {image ? (
+          <Image source={{ uri: image }} style={styles.photoImage} />
+        ) : (
+          <Text style={styles.photoText}>Agregar foto</Text>
+        )}
       </TouchableOpacity>
 
       {/* NOMBRE */}
@@ -157,10 +226,15 @@ const styles = StyleSheet.create({
     padding: 16,
     paddingBottom: 40
   },
-
-
+  title: { fontSize: 22, fontWeight: '700', marginBottom: 16 },
+  photoImage: {
+    width: '100%',
+    height: '100%',
+    borderRadius: 10,
+    resizeMode: 'cover'
+  },
   photoContainer: {
-    height: 160,
+    height: 200,
     borderRadius: 10,
     borderWidth: 1,
     borderColor: '#bbb',

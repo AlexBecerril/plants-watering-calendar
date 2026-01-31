@@ -2,6 +2,7 @@ import React, { useEffect, useState } from 'react';
 import { View, Text, StyleSheet, TouchableOpacity, Alert, Platform } from 'react-native';
 import DateTimePicker from '@react-native-community/datetimepicker';
 import { getDB } from '../db';
+import bleManager from '../utils/bleManager';
 
 export default function RegisterHumidityScreen({ route, navigation }) {
   const [indicatorColor, setIndicatorColor] = useState('green');
@@ -13,14 +14,57 @@ export default function RegisterHumidityScreen({ route, navigation }) {
   const [showPicker, setShowPicker] = useState(false);
 
   // Simulación de lectura de humedad
-  useEffect(() => {
+  /*useEffect(() => {
     const interval = setInterval(() => {
       const randomValue = Math.floor(Math.random() * 101); // 0 - 100
       setHumidity(randomValue);
     }, 2000);
 
     return () => clearInterval(interval);
+  }, []);*/
+  useEffect(() => {
+    let isReading = false;
+    let warned = false;
+
+    const readFromBLE = async () => {
+      if (!bleManager.device || isReading) return;
+
+      isReading = true;
+
+      try {
+        await bleManager.readHumidity((rawValue) => {
+          /**
+           * Ejemplo esperado:
+           * "Raw:4095 | Humedad: 0.0%"
+           */
+          const match = rawValue.match(/Humedad:\s*([\d.]+)%/);
+
+          if (match) {
+            const value = Math.round(parseFloat(match[1]));
+            setHumidity(value);
+            warned = false; // reset warning si volvió a funcionar
+          } else if (!warned) {
+            warned = true;
+            Alert.alert('BLE', 'Formato de humedad no reconocido');
+          }
+        });
+      } catch (e) {
+        console.log('BLE read error:', e);
+        if (!warned) {
+          warned = true;
+          Alert.alert('BLE', 'Dispositivo no disponible');
+        }
+      } finally {
+        isReading = false;
+      }
+    };
+
+    const interval = setInterval(readFromBLE, 2000);
+
+    return () => clearInterval(interval);
   }, []);
+
+
 
   // Evaluar estado según rangos de la planta
   useEffect(() => {
@@ -65,7 +109,7 @@ export default function RegisterHumidityScreen({ route, navigation }) {
     <View style={styles.container}>
       <Text style={styles.title}>Humedad actual</Text>
 
-      <Text style={styles.humidityValue}>{humidity}%</Text>
+      <Text style={[styles.humidityValue,{ color: indicatorColor }]}>{humidity}%</Text>
 
       <View style={styles.statusRow}>
         <View
@@ -119,8 +163,7 @@ const styles = StyleSheet.create({
   },
   humidityValue: {
     fontSize: 55,
-    fontWeight: '800',
-    color: '#1E88E5'
+    fontWeight: '800'
   },
   status: {
     marginTop: 12,

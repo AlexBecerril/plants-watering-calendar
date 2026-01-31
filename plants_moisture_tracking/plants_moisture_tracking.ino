@@ -7,7 +7,7 @@ const int pinSensor = 34;
 const int leds[6] = {13,12,14,27,26,25};
 
 const float DRY_VALUE = 4095; //Calibrate
-const float WET_VALUE = 0; //Calibrate
+const float WET_VALUE = 700; //Calibrate
 
 BLECharacteristic *pCharacteristic;
 bool deviceConnected = false;
