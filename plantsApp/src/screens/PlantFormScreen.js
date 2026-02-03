@@ -10,6 +10,7 @@ import {
 } from 'react-native';
 import { getDB } from '../db';
 import { launchCamera, launchImageLibrary } from 'react-native-image-picker';
+import RNFS from 'react-native-fs';
 
 export default function PlantFormScreen({ route, navigation }) {
   const editingPlant = route.params?.plant;
@@ -22,6 +23,17 @@ export default function PlantFormScreen({ route, navigation }) {
   const [overwaterRisk, setOverwaterRisk] = useState(editingPlant?.flood_risk?.toString() || '');
   const [comments, setComments] = useState(editingPlant?.comments || '');
   const [image, setImage] = useState(editingPlant?.image || null);
+
+  const persistImage = async (tempUri) => {
+    const filename = `plant_${Date.now()}.jpg`;
+    const destPath = `${RNFS.DocumentDirectoryPath}/${filename}`;
+
+    const cleanUri = tempUri.replace('file://', '');
+
+    await RNFS.copyFile(cleanUri, destPath);
+
+    return `file://${destPath}`;
+  };
 
   const savePlant = async () => {
     if (!name.trim()) {
@@ -110,9 +122,11 @@ export default function PlantFormScreen({ route, navigation }) {
           onPress: () => {
             launchCamera(
               { mediaType: 'photo', quality: 0.7 },
-              response => {
+              async response => {
                 if (!response.didCancel && !response.errorCode) {
-                  setImage(response.assets[0].uri);
+                  const tempUri = response.assets[0].uri;
+                  const permanentUri = await persistImage(tempUri);
+                  setImage(permanentUri);
                 }
               }
             );
@@ -123,9 +137,11 @@ export default function PlantFormScreen({ route, navigation }) {
           onPress: () => {
             launchImageLibrary(
               { mediaType: 'photo', quality: 0.7 },
-              response => {
+              async response => {
                 if (!response.didCancel && !response.errorCode) {
-                  setImage(response.assets[0].uri);
+                  const tempUri = response.assets[0].uri;
+                  const permanentUri = await persistImage(tempUri);
+                  setImage(permanentUri);
                 }
               }
             );
