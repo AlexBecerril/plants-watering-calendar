@@ -8,7 +8,7 @@ import PlantFormScreen from './src/screens/PlantFormScreen';
 import PlantDetailScreen from './src/screens/PlantDetailScreen';
 import RegisterWateringScreen from './src/screens/RegisterWateringScreen';
 import RegisterHumidityScreen from './src/screens/RegisterHumidityScreen';
-
+import PlantLogsScreen from './src/screens/PlantLogsScreen';
 
 const Stack = createNativeStackNavigator();
 
@@ -71,6 +71,11 @@ export default function App() {
           name="RegisterHumidity"
           component={RegisterHumidityScreen}
           options={{ title: 'Registrar humedad' }}
+        />
+        <Stack.Screen
+          name="PlantLogs"
+          component={PlantLogsScreen}
+          options={{ title: 'Registros' }}
         />
       </Stack.Navigator>
     </NavigationContainer>

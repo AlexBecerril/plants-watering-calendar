@@ -293,6 +293,31 @@ export default function PlantDetailScreen({ route, navigation }) {
       </TouchableOpacity>
 
       <TouchableOpacity
+        style={styles.viewLogsButton}
+        onPress={() =>
+          navigation.navigate('PlantLogs', {
+            plant,
+            type: 'moisture',
+          })
+        }
+      >
+        <Text style={styles.buttonText}>Ver registros de humedad</Text>
+      </TouchableOpacity>
+
+      <TouchableOpacity
+        style={styles.viewLogsButton}
+        onPress={() =>
+          navigation.navigate('PlantLogs', {
+            plant,
+            type: 'watering',
+          })
+        }
+      >
+        <Text style={styles.buttonText}>Ver registros de riego</Text>
+      </TouchableOpacity>
+
+
+      <TouchableOpacity
         style={styles.editButton}
         onPress={() => navigation.navigate('PlantForm', { plant })}
       >
@@ -329,5 +354,12 @@ const styles = StyleSheet.create({
   humidityButton: { marginBottom: 16, padding: 14, backgroundColor: '#7E57C2', borderRadius: 8, alignItems: 'center' },
   editButton: { marginBottom: 16, padding: 14, backgroundColor: '#2e7d32', borderRadius: 8, alignItems: 'center' },
   deleteButton: { marginBottom: 16, padding: 14, backgroundColor: '#ff0000', borderRadius: 8, alignItems: 'center' },
-  buttonText: { color: '#fff', fontWeight: '600', fontSize:16 }
+  buttonText: { color: '#fff', fontWeight: '600', fontSize:16 },
+  viewLogsButton: {
+    marginBottom: 16,
+    padding: 14,
+    backgroundColor: '#555',
+    borderRadius: 8,
+    alignItems: 'center',
+  },
 });
