@@ -40,7 +40,8 @@ export default function RegisterHumidityScreen({ route, navigation }) {
           const match = rawValue.match(/Humedad:\s*([\d.]+)%/);
 
           if (match) {
-            const value = Math.round(parseFloat(match[1]));
+            //const value = Math.round(parseFloat(match[1]));
+            const value = parseFloat(match[1]);
             setHumidity(value);
             warned = false; // reset warning si volvió a funcionar
           } else if (!warned) {
@@ -134,6 +135,7 @@ export default function RegisterHumidityScreen({ route, navigation }) {
           value={date}
           mode="date"
           display={Platform.OS === 'ios' ? 'spinner' : 'default'}
+          themeVariant="dark"
           maximumDate={new Date()}
           onChange={(event, selectedDate) => {
             setShowPicker(false);
@@ -159,7 +161,8 @@ const styles = StyleSheet.create({
   title: {
     fontSize: 22,
     marginBottom: 12,
-    fontWeight: '600'
+    fontWeight: '600',
+    color:'#fff'
   },
   humidityValue: {
     fontSize: 55,
@@ -168,7 +171,8 @@ const styles = StyleSheet.create({
   status: {
     marginTop: 12,
     fontSize: 16,
-    textAlign: 'center'
+    textAlign: 'center',
+    color:'#fff'
   },
   statusRow: {
     flexDirection: 'row',
@@ -197,17 +201,19 @@ const styles = StyleSheet.create({
   label: {
     fontWeight: '600',
     marginBottom: 8,
-    fontSize: 16
+    fontSize: 16,
+    color:'#fff'
   },
   dateButton: {
     padding: 12,
     borderWidth: 1,
-    borderColor: '#ccc',
+    borderColor: '#334155',
     borderRadius: 8,
     minWidth: 140,
     alignItems: 'center',
   },
   dateText: {
-    fontSize: 16
+    fontSize: 16,
+    color:'#38bdf8'
   }
 });

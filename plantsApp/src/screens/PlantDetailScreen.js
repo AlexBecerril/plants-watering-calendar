@@ -234,22 +234,22 @@ export default function PlantDetailScreen({ route, navigation }) {
         <Text style={styles.cardTitle}>Historial de Riegos (últimos 30 días)</Text>
         <LineChart
           data={prepareChartData(wateringLog)}
-          width={screenWidth}
+          width={screenWidth - 24}
           height={200}
           chartConfig={{
-            backgroundColor: '#f1f1f1',
-            backgroundGradientFrom: '#f1f1f1',
-            backgroundGradientTo: '#f1f1f1',
+            backgroundColor: '#1e293b',
+            backgroundGradientFrom: '#1e293b',
+            backgroundGradientTo: '#1e293b',
             decimalPlaces: 0,
             color: (opacity = 1) => `rgba(30,136,229,${opacity})`,
-            labelColor: (opacity = 1) => `rgba(0,0,0,${opacity})`,
+            labelColor: (opacity = 1) => `rgba(255,255,255,${opacity})`, // #ffffff
             propsForDots: {
               r: '4',
               strokeWidth: '2',
               stroke: '#1E88E5'
             }
           }}
-          style={{ marginVertical: 8, borderRadius: 8 }}
+          style={{ marginVertical: 8, borderRadius: 8, marginHorizontal:-12}}
         />
       </View>
 
@@ -258,15 +258,15 @@ export default function PlantDetailScreen({ route, navigation }) {
         <Text style={styles.cardTitle}>Historial de Humedad (últimos 30 días)</Text>
         <LineChart
           data={prepareChartData(humidityLog)}
-          width={screenWidth}
+          width={screenWidth - 24}
           height={200}
           chartConfig={{
-            backgroundColor: '#f1f1f1',
-            backgroundGradientFrom: '#f1f1f1',
-            backgroundGradientTo: '#f1f1f1',
+            backgroundColor: '#1e293b',
+            backgroundGradientFrom: '#1e293b',
+            backgroundGradientTo: '#1e293b',
             decimalPlaces: 0,
             color: (opacity = 1) => `rgba(126,87,194,${opacity})`,
-            labelColor: (opacity = 1) => `rgba(0,0,0,${opacity})`,
+            labelColor: (opacity = 1) => `rgba(255,255,255,${opacity})`, // #ffffff
             propsForDots: {
               r: '4',
               strokeWidth: '2',
@@ -274,7 +274,7 @@ export default function PlantDetailScreen({ route, navigation }) {
             }
           }}
           bezier
-          style={{ marginVertical: 8, borderRadius: 8 }}
+          style={{ marginVertical: 8, borderRadius: 8, marginHorizontal:-12 }}
         />
       </View>
 
@@ -338,22 +338,22 @@ export default function PlantDetailScreen({ route, navigation }) {
 
 const styles = StyleSheet.create({
   container: { padding: 16},
-  name: { fontSize: 22, fontWeight: '700' },
-  scientific: { fontSize: 18, color: '#555', marginBottom: 12 },
-  imageWrapper: { alignItems: 'center', marginVertical: 12, backgroundColor:'#ccc', padding:10, borderRadius:20, minHeight: 120 },
+  name: { fontSize: 22, fontWeight: '700', color:'#ffffff' },
+  scientific: { fontSize: 18, color: '#38bdf8', marginBottom: 12 },
+  imageWrapper: { alignItems: 'center', marginVertical: 12, backgroundColor:'#1e293b', padding:10, borderRadius:20, minHeight: 120 },
   image: { width: 200, height: 200, borderRadius: 12 },
   imagePlaceholder: { fontSize: 64 },
   card: {
     marginTop: 5, 
     padding: 12, 
-    backgroundColor: '#f1f1f1', 
+    backgroundColor: '#1e293b', 
     borderRadius: 8},
-  cardTitle: { fontWeight: '600', marginBottom: 6, fontSize:16 },
-  cardText: { fontSize:16 },
-  wateringButton: { marginBottom: 16, padding: 14, backgroundColor: '#1E88E5', borderRadius: 8, alignItems: 'center' },
+  cardTitle: { fontWeight: '600', marginBottom: 6, fontSize:16, color:'#ffffff' },
+  cardText: { fontSize:16, color:'#38bdf8' },
+  wateringButton: { marginBottom: 16, padding: 14, backgroundColor: '#2563eb', borderRadius: 8, alignItems: 'center' },
   humidityButton: { marginBottom: 16, padding: 14, backgroundColor: '#7E57C2', borderRadius: 8, alignItems: 'center' },
-  editButton: { marginBottom: 16, padding: 14, backgroundColor: '#2e7d32', borderRadius: 8, alignItems: 'center' },
-  deleteButton: { marginBottom: 16, padding: 14, backgroundColor: '#ff0000', borderRadius: 8, alignItems: 'center' },
+  editButton: { marginBottom: 16, padding: 14, backgroundColor: '#2563eb', borderRadius: 8, alignItems: 'center' },
+  deleteButton: { marginBottom: 16, padding: 14, backgroundColor: '#ef4444', borderRadius: 8, alignItems: 'center' },
   buttonText: { color: '#fff', fontWeight: '600', fontSize:16 },
   viewLogsButton: {
     marginBottom: 16,

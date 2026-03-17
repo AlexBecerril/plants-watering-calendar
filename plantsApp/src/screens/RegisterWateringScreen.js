@@ -45,6 +45,7 @@ export default function RegisterWateringScreen({ route, navigation }) {
           value={date}
           mode="date"
           display={Platform.OS === 'ios' ? 'spinner' : 'default'}
+          themeVariant="dark"
           onChange={(event, selectedDate) => {
             setShowPicker(false);
             if (selectedDate) setDate(selectedDate);
@@ -61,21 +62,22 @@ export default function RegisterWateringScreen({ route, navigation }) {
 
 const styles = StyleSheet.create({
   container: { flex: 1, padding: 16 },
-  title: { fontSize: 22, fontWeight: '700', marginBottom: 24 },
-  label: { fontWeight: '600', marginBottom: 8, fontSize:16 },
+  title: { fontSize: 22, fontWeight: '700', marginBottom: 24, color:'#fff' },
+  label: { fontWeight: '600', marginBottom: 8, fontSize:16, color:'#fff' },
   dateButton: {
     padding: 14,
     borderWidth: 1,
-    borderColor: '#ccc',
+    borderColor: '#334155',
     borderRadius: 8
   },
   dateText:{
-    fontSize:16
+    fontSize:16,
+    color:'#38bdf8'
   },
   saveButton: {
     marginTop: 32,
     padding: 16,
-    backgroundColor: '#1E88E5',
+    backgroundColor: '#2563eb',
     borderRadius: 8,
     alignItems: 'center'
   },

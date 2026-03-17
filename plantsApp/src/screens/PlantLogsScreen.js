@@ -78,7 +78,7 @@ export default function PlantLogsScreen({ route }) {
         keyExtractor={(item) => item.id.toString()}
         renderItem={renderItem}
         ListEmptyComponent={
-          <Text style={{ textAlign: 'center', marginTop: 20 }}>
+          <Text style={{ textAlign: 'center', marginTop: 20, color:'#fff' }}>
             No hay registros
           </Text>
         }
@@ -93,11 +93,11 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     justifyContent: 'space-between',
     padding: 12,
-    backgroundColor: '#f1f1f1',
+    backgroundColor: '#1e293b',
     borderRadius: 8,
     marginBottom: 10,
   },
-  date: { fontWeight: '600' },
-  value: { marginTop: 4 },
-  delete: { color: 'red', fontSize: 18 },
+  date: { fontWeight: '600', color:'#fff' },
+  value: { marginTop: 4, color:'#38bdf8' },
+  delete: { color: '#ef4444', fontSize: 18 },
 });

@@ -46,7 +46,19 @@ export default function App() {
 
   return (
     <NavigationContainer>
-      <Stack.Navigator>
+      <Stack.Navigator screenOptions={{
+        headerStyle: {
+          backgroundColor: '#0f172a',
+        },
+        headerTintColor: '#ffffff',
+        headerTitleStyle: {
+          color: '#ffffff'
+        },
+        headerShadowVisible: false,
+        contentStyle: {
+          backgroundColor: '#0f172a'
+        }
+      }}>
         <Stack.Screen
           name="PlantList"
           component={PlantListScreen}

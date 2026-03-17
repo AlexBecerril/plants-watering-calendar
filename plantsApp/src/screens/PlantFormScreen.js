@@ -242,7 +242,7 @@ const styles = StyleSheet.create({
     padding: 16,
     paddingBottom: 40
   },
-  title: { fontSize: 22, fontWeight: '700', marginBottom: 16 },
+  title: { fontSize: 22, fontWeight: '700', marginBottom: 16, color:'#fff' },
   photoImage: {
     width: '100%',
     height: '100%',
@@ -253,27 +253,29 @@ const styles = StyleSheet.create({
     height: 200,
     borderRadius: 10,
     borderWidth: 1,
-    borderColor: '#bbb',
-    backgroundColor: '#f5f5f5',
+    borderColor: '#1e293b',
+    backgroundColor: '#1e293b',
     justifyContent: 'center',
     alignItems: 'center',
     marginBottom: 20
   },
 
   photoText: {
-    color: '#666',
+    color: '#fff',
     fontSize: 16
   },
 
   label: {
     marginTop: 12,
     fontWeight: '600',
-    fontSize: 16
+    fontSize: 16,
+    color:'#fff'
   },
 
   input: {
     borderWidth: 1,
-    borderColor: '#ccc',
+    borderColor: '#334155',
+    color:'#38bdf8',
     borderRadius: 6,
     padding: 10,
     marginTop: 4,
@@ -288,7 +290,7 @@ const styles = StyleSheet.create({
   saveButton: {
     marginTop: 24,
     padding: 16,
-    backgroundColor: '#2e7d32',
+    backgroundColor: '#2563eb',
     borderRadius: 8,
     alignItems: 'center',
     marginBottom: 10

@@ -261,7 +261,7 @@ const styles = StyleSheet.create({
     marginBottom: 12,
     padding: 12,
     borderRadius: 8,
-    backgroundColor: '#eee'
+    backgroundColor: '#1e293b'
   },
   imagePlaceholder: {
     width: 70,
@@ -269,23 +269,25 @@ const styles = StyleSheet.create({
     marginRight: 12,
     alignItems: 'center',
     justifyContent: 'center',
-    backgroundColor: '#ccc',
+    backgroundColor: '#0f172a',
+    borderColor:'#334155',
+    borderWidth:1,
     borderRadius: 6
   },
   image: { width: 70, height: 70, borderRadius: 6 },
-  name: { fontSize: 18, fontWeight: '600' },
-  scientific: { fontSize: 16, color: '#555' },
+  name: { fontSize: 18, fontWeight: '600', color:'#ffffff' },
+  scientific: { fontSize: 16, color: '#ffffff' },
   textContainer: {
     flex: 1
   },
   meta: {
     fontSize: 16,
-    color: '#666',
+    color: '#38bdf8',
     marginTop: 2
   },
   addButton: {
     padding: 16,
-    backgroundColor: '#2e7d32',
+    backgroundColor: '#2563eb',
     borderRadius: 8,
     alignItems: 'center',
     marginBottom: 20
@@ -293,7 +295,7 @@ const styles = StyleSheet.create({
   addButtonText: { color: '#fff', fontWeight: '600', fontSize: 16 },
   expButton: {
     padding: 16,
-    backgroundColor: '#2e7d32',
+    backgroundColor: '#2563eb',
     borderRadius: 8,
     alignItems: 'center',
     marginBottom: 20
